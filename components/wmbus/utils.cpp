@@ -81,6 +81,7 @@ namespace wmbus {
     int ci_field = frame[10];
 
     switch(ci_field) {
+      case 0x8C:
       case 0x8D: // ELL
         offset = 17;
         // tpl-mfct + tpl-id + tpl-version + tpl-type
@@ -292,7 +293,7 @@ namespace wmbus {
       ESP_LOGV(TAG, "2F2F check after decrypting - OK");
     }
     else {
-      ESP_LOGD(TAG, "2F2F check after decrypting  !!!");
+      ESP_LOGD(TAG, "2F2F check after decrypting - failed!");
       return false;
     }
     return true;
