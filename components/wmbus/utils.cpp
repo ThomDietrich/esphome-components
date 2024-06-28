@@ -173,6 +173,7 @@ namespace wmbus {
       case 0x7A:
       case 0x7D:
       case 0x7F:
+      case 0x8C:
       case 0x9E:
         offset = 15;
         // dll-mfct + dll-id + dll-version + dll-type
@@ -190,7 +191,6 @@ namespace wmbus {
       case 0x75:
       case 0x7C:
       case 0x7E:
-      case 0x8C:
       case 0x9F:
         offset = 23;
         // tpl-mfct
