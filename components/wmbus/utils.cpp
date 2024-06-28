@@ -190,6 +190,7 @@ namespace wmbus {
       case 0x75:
       case 0x7C:
       case 0x7E:
+      case 0x8C:
       case 0x9F:
         offset = 23;
         // tpl-mfct
