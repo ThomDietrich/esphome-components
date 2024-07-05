@@ -174,7 +174,6 @@ namespace wmbus {
       case 0x7A:
       case 0x7D:
       case 0x7F:
-      case 0x8C:
       case 0x9E:
         offset = 15;
         // dll-mfct + dll-id + dll-version + dll-type
@@ -194,6 +193,25 @@ namespace wmbus {
       case 0x7E:
       case 0x9F:
         offset = 23;
+        // tpl-mfct
+        for (int j=0; j<2; ++j) {
+          iv[i++] = frame[15+j];
+        }
+        // tpl-id
+        for (int j=0; j<4; ++j) {
+          iv[i++] = frame[11+j];
+        }
+        // tpl-version + tpl-type
+        for (int j=0; j<2; ++j) {
+          iv[i++] = frame[17+j];
+        }
+        // tpl-acc
+        for (int j=0; j<8; ++j) {
+          iv[i++] = frame[19];
+        }
+        break;
+      case 0x8C:
+        offset = 36;
         // tpl-mfct
         for (int j=0; j<2; ++j) {
           iv[i++] = frame[15+j];
