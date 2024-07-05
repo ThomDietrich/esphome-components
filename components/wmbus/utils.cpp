@@ -107,7 +107,7 @@ namespace wmbus {
       return true;
     }
 
-    ESP_LOGVV(TAG, "(ELL)  CI: %02X  offset: %d", ci_field, offset);
+    ESP_LOGVV(TAG, "(ELL)  CI: %02X  offset: %d (Thomas 01)", ci_field, offset);
     ESP_LOGVV(TAG, "(ELL)  IV: %02X%02X%02X%02X%02X%02X%02X%02X%02X%02X%02X%02X%02X%02X%02X%02X",
                    iv[0], iv[1], iv[2],  iv[3],  iv[4],  iv[5],  iv[6],  iv[7],
                    iv[8], iv[9], iv[10], iv[11], iv[12], iv[13], iv[14], iv[15]);
