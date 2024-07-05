@@ -83,7 +83,7 @@ namespace wmbus {
     switch(ci_field) {
       case 0x8C:
       case 0x8D: // ELL
-        offset = 17;
+        offset = 25;
         // tpl-mfct + tpl-id + tpl-version + tpl-type
         for (int j=0; j<8; ++j) {
           iv[i++] = frame[2+j];
