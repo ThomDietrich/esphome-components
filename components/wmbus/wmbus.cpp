@@ -275,7 +275,6 @@ namespace wmbus {
     bool ret_val = true;
     int ci_field = telegram[10];
     switch(ci_field) {
-      case 0x8C:
       case 0x8D:
         {
           if (decrypt_ELL_AES_CTR(telegram, key)) {
