@@ -27,11 +27,11 @@ namespace wmbus {
 
     // The 2 first blocks contains 25 bytes when excluding CRC and the L-field
     // The other blocks contains 16 bytes when excluding the CRC-fields
-    // Less than 26 (15 + 10) 
+    // Less than 26 (15 + 10)
     if ( t_L < 26 ) {
       nrBlocks = 2;
     }
-    else { 
+    else {
       nrBlocks = (((t_L - 26) / 16) + 3);
     }
 
@@ -118,7 +118,7 @@ namespace wmbus {
     std::vector<unsigned char> encrypted_bytes;
     std::vector<unsigned char> decrypted_bytes;
     encrypted_bytes.insert(encrypted_bytes.end(), pos, frame.end());
-    
+
     std::string en_bytes = format_hex_pretty(encrypted_bytes);
     en_bytes.erase(std::remove(en_bytes.begin(), en_bytes.end(), '.'), en_bytes.end());
     ESP_LOGVV(TAG, "(ELL) AES_CTR decrypting: %s", en_bytes.c_str());
@@ -210,7 +210,7 @@ namespace wmbus {
           iv[i++] = frame[19];
         }
         break;
-      
+
       default:
         ESP_LOGE(TAG, "(TPL) unknown CI field [%02X]", ci_field);
         return false;
@@ -281,6 +281,106 @@ namespace wmbus {
     std::string dec_bytes = format_hex_pretty(dec_data);
     dec_bytes.erase(std::remove(dec_bytes.begin(), dec_bytes.end(), '.'), dec_bytes.end());
     ESP_LOGVV(TAG, "(TPL) AES CBC IV  decrypted: %s", dec_bytes.c_str());
+
+    if (num_bytes_to_decrypt < buffer.size()) {
+      frame.insert(frame.end(), buffer.begin()+num_bytes_to_decrypt, buffer.end());
+    }
+
+    uint32_t decrypt_check = 0x2F2F;
+    uint32_t dc = (((uint16_t)frame[offset] << 8) | (frame[offset+1]));
+    if ( dc == decrypt_check) {
+      ESP_LOGV(TAG, "2F2F check after decrypting - OK");
+    }
+    else {
+      ESP_LOGD(TAG, "2F2F check after decrypting  !!!");
+      return false;
+    }
+    return true;
+  }
+
+  bool decrypt_TPL_AES_CBC_NO_IV(std::vector<unsigned char> &frame,
+                              std::vector<unsigned char> &aeskey) {
+    unsigned char iv[16]{0};
+    int i{0};
+    int offset{0};
+    int ci_field = frame[10];
+
+    switch(ci_field) {
+      case 0x8C:
+        offset = 36;
+        memset(iv, 0, sizeof(iv));
+        break;
+
+      default:
+        ESP_LOGE(TAG, "(TPL) unknown CI field [%02X]", ci_field);
+        return false;
+        break;
+    }
+
+    if (aeskey.size() == 0) {
+      return true;
+    }
+
+    ESP_LOGVV(TAG, "(TPL)  CI: %02X  offset: %d", ci_field, offset);
+    ESP_LOGVV(TAG, "(TPL)  NO_IV: %02X%02X%02X%02X%02X%02X%02X%02X%02X%02X%02X%02X%02X%02X%02X%02X",
+                   iv[0], iv[1], iv[2],  iv[3],  iv[4],  iv[5],  iv[6],  iv[7],
+                   iv[8], iv[9], iv[10], iv[11], iv[12], iv[13], iv[14], iv[15]);
+    std::string key = format_hex_pretty(aeskey);
+    key.erase(std::remove(key.begin(), key.end(), '.'), key.end());
+    ESP_LOGVV(TAG, "(TPL) KEY: %s", key.c_str());
+
+    std::vector<unsigned char>::iterator pos = frame.begin() + offset;
+    std::vector<unsigned char> buffer;
+    buffer.insert(buffer.end(), pos, frame.end());
+
+    size_t num_bytes_to_decrypt = buffer.size();
+
+    uint8_t tpl_num_encr_blocks = ((uint8_t)frame[13] >> 4) & 0x0f; // check if true for both short and long
+    if (tpl_num_encr_blocks) {
+      num_bytes_to_decrypt = tpl_num_encr_blocks*16;
+    }
+
+    if (buffer.size() < num_bytes_to_decrypt) {
+      num_bytes_to_decrypt = buffer.size();
+      // We must have at least 16 bytes to decrypt. Give up otherwise.
+      if (num_bytes_to_decrypt < 16) {
+        return false;
+      }
+    }
+
+    std::string dec_buffer = format_hex_pretty(buffer);
+    dec_buffer.erase(std::remove(dec_buffer.begin(), dec_buffer.end(), '.'), dec_buffer.end());
+    ESP_LOGVV(TAG, "(TPL) AES CBC NO IV decrypting: %s", dec_buffer.c_str());
+
+    // The content should be a multiple of 16 since we are using AES CBC mode.
+    if (num_bytes_to_decrypt % 16 != 0) {
+      num_bytes_to_decrypt -= num_bytes_to_decrypt % 16;
+      assert (num_bytes_to_decrypt % 16 == 0);
+      // There must be at least 16 bytes remaining.
+      if (num_bytes_to_decrypt < 16) {
+        return false;
+      }
+    }
+
+    unsigned char buffer_data[num_bytes_to_decrypt];
+    memcpy(buffer_data, safeButUnsafeVectorPtr(buffer), num_bytes_to_decrypt);
+    unsigned char decrypted_data[num_bytes_to_decrypt];
+
+    AES_CBC_decrypt_buffer(decrypted_data,
+                          buffer_data,
+                          num_bytes_to_decrypt,
+                          safeButUnsafeVectorPtr(aeskey),
+                          iv);
+
+    // Remove the encrypted bytes.
+    frame.erase(pos, frame.end());
+    // Insert the decrypted bytes.
+    frame.insert(frame.end(), decrypted_data, decrypted_data+num_bytes_to_decrypt);
+
+    std::vector<unsigned char> dec_data(decrypted_data, decrypted_data + num_bytes_to_decrypt);
+    std::string dec_bytes = format_hex_pretty(dec_data);
+    dec_bytes.erase(std::remove(dec_bytes.begin(), dec_bytes.end(), '.'), dec_bytes.end());
+    ESP_LOGVV(TAG, "(TPL) AES CBC NO IV  decrypted: %s", dec_bytes.c_str());
 
     if (num_bytes_to_decrypt < buffer.size()) {
       frame.insert(frame.end(), buffer.begin()+num_bytes_to_decrypt, buffer.end());

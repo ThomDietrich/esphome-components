@@ -2,7 +2,7 @@
 
 #include "esphome/core/helpers.h"
 #include "esphome/core/log.h"
-#include <algorithm> 
+#include <algorithm>
 #include <assert.h>
 #include <memory.h>
 #include <vector>
@@ -26,6 +26,7 @@ namespace wmbus {
 
   bool decrypt_ELL_AES_CTR(std::vector<unsigned char> &frame, std::vector<unsigned char> &aeskey);
   bool decrypt_TPL_AES_CBC_IV(std::vector<unsigned char> &frame, std::vector<unsigned char> &aeskey);
+  bool decrypt_TPL_AES_CBC_NO_IV(std::vector<unsigned char> &frame, std::vector<unsigned char> &aeskey);
 
 }
 }

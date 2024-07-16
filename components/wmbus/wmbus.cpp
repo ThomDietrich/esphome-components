@@ -81,7 +81,7 @@ namespace wmbus {
         }
         //
         auto *sensor = this->wmbus_listeners_[meter_id];
-        if ( ((mbus_data.mode == 'T') && 
+        if ( ((mbus_data.mode == 'T') &&
               ((sensor->framemode == MODE_T1) || (sensor->framemode == MODE_T1C1))) ||
             ((mbus_data.mode == 'C') &&
               ((sensor->framemode == MODE_C1) || (sensor->framemode == MODE_T1C1)))
@@ -275,6 +275,15 @@ namespace wmbus {
     bool ret_val = true;
     int ci_field = telegram[10];
     switch(ci_field) {
+      case 0x8C:
+        {
+          if (!decrypt_TPL_AES_CBC_NO_IV(telegram, key)) {
+            ESP_LOGVV(TAG, "Decrypting TPL AES CBC NO IV failed!");
+            ret_val = false;
+          }
+        }
+        break;
+
       case 0x8D:
         {
           if (decrypt_ELL_AES_CTR(telegram, key)) {
