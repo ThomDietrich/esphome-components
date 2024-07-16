@@ -336,31 +336,31 @@ namespace wmbus {
     size_t num_bytes_to_decrypt = buffer.size();
 
     uint8_t tpl_num_encr_blocks = ((uint8_t)frame[13] >> 4) & 0x0f; // check if true for both short and long
-    if (tpl_num_encr_blocks) {
-      num_bytes_to_decrypt = tpl_num_encr_blocks*16;
-    }
+    //if (tpl_num_encr_blocks) {
+    //  num_bytes_to_decrypt = tpl_num_encr_blocks*16;
+    //}
 
-    if (buffer.size() < num_bytes_to_decrypt) {
-      num_bytes_to_decrypt = buffer.size();
-      // We must have at least 16 bytes to decrypt. Give up otherwise.
-      if (num_bytes_to_decrypt < 16) {
-        return false;
-      }
-    }
+    // if (buffer.size() < num_bytes_to_decrypt) {
+    //   num_bytes_to_decrypt = buffer.size();
+    //   // We must have at least 16 bytes to decrypt. Give up otherwise.
+    //   if (num_bytes_to_decrypt < 16) {
+    //     return false;
+    //   }
+    // }
 
     std::string dec_buffer = format_hex_pretty(buffer);
     dec_buffer.erase(std::remove(dec_buffer.begin(), dec_buffer.end(), '.'), dec_buffer.end());
     ESP_LOGVV(TAG, "(TPL) AES CBC NO IV decrypting: %s", dec_buffer.c_str());
 
     // The content should be a multiple of 16 since we are using AES CBC mode.
-    if (num_bytes_to_decrypt % 16 != 0) {
-      num_bytes_to_decrypt -= num_bytes_to_decrypt % 16;
-      assert (num_bytes_to_decrypt % 16 == 0);
-      // There must be at least 16 bytes remaining.
-      if (num_bytes_to_decrypt < 16) {
-        return false;
-      }
-    }
+    //if (num_bytes_to_decrypt % 16 != 0) {
+    //  num_bytes_to_decrypt -= num_bytes_to_decrypt % 16;
+    //  assert (num_bytes_to_decrypt % 16 == 0);
+    //  // There must be at least 16 bytes remaining.
+    //  if (num_bytes_to_decrypt < 16) {
+    //    return false;
+    //  }
+    //}
 
     unsigned char buffer_data[num_bytes_to_decrypt];
     memcpy(buffer_data, safeButUnsafeVectorPtr(buffer), num_bytes_to_decrypt);
@@ -382,9 +382,9 @@ namespace wmbus {
     dec_bytes.erase(std::remove(dec_bytes.begin(), dec_bytes.end(), '.'), dec_bytes.end());
     ESP_LOGVV(TAG, "(TPL) AES CBC NO IV  decrypted: %s", dec_bytes.c_str());
 
-    if (num_bytes_to_decrypt < buffer.size()) {
-      frame.insert(frame.end(), buffer.begin()+num_bytes_to_decrypt, buffer.end());
-    }
+    //if (num_bytes_to_decrypt < buffer.size()) {
+    //  frame.insert(frame.end(), buffer.begin()+num_bytes_to_decrypt, buffer.end());
+    //}
 
     uint32_t decrypt_check = 0x2F2F;
     uint32_t dc = (((uint16_t)frame[offset] << 8) | (frame[offset+1]));
@@ -393,7 +393,7 @@ namespace wmbus {
     }
     else {
       ESP_LOGD(TAG, "2F2F check after decrypting  !!!");
-      //return false;
+      // return false;
     }
     return true;
   }
