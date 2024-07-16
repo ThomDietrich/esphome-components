@@ -393,7 +393,7 @@ namespace wmbus {
     }
     else {
       ESP_LOGD(TAG, "2F2F check after decrypting  !!!");
-      return false;
+      //return false;
     }
     return true;
   }
