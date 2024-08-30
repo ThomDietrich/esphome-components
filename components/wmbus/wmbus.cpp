@@ -69,15 +69,6 @@ namespace wmbus {
       std::string telegram = format_hex_pretty(frame);
       telegram.erase(std::remove(telegram.begin(), telegram.end(), '.'), telegram.end());
 
-      ESP_LOGD(TAG, "Using driver '%s' for ID [0x%08X] RSSI: %d dBm LQI: %d Frame: %s %s T: %s",
-        selected_driver->get_name().c_str(),
-        meter_id,
-        mbus_data.rssi,
-        mbus_data.lqi,
-        frameMode,
-        frameFormat,
-        telegram.c_str());
-
       ESP_LOGD(TAG, "Overwriting the telegram message...");
       const char* t = "5344a5119955758176078c0028900f002c2577010000968ef8fBe33061Bf7a6700310710a897ec701e67cf0a62f6c55258c1Be7d3825361a07c4224f96f0B6e22Be48Bae5a5ac859524Ba853de0166275df9c626";
       for (int j=0; j<64; ++j) {
