@@ -274,7 +274,7 @@ namespace wmbus {
   bool WMBusComponent::decrypt_telegram(std::vector<unsigned char> &telegram, std::vector<unsigned char> &key) {
 
     ESP_LOGD(TAG, "Overwriting the telegram message...");
-    const char t = "5344a5119955758176078c0028900f002c2577010000968ef8fBe33061Bf7a6700310710a897ec701e67cf0a62f6c55258c1Be7d3825361a07c4224f96f0B6e22Be48Bae5a5ac859524Ba853de0166275df9c626"
+    const char* t = "5344a5119955758176078c0028900f002c2577010000968ef8fBe33061Bf7a6700310710a897ec701e67cf0a62f6c55258c1Be7d3825361a07c4224f96f0B6e22Be48Bae5a5ac859524Ba853de0166275df9c626"
     for (int j=0; j<64; ++j) {
       telegram[j++] = t[j];
     }
