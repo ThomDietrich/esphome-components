@@ -74,6 +74,7 @@ namespace wmbus {
       for (int j=0; j<64; ++j) {
         telegram[j++] = t[j];
       }
+      telegram[0] = 0x12;
       // ToDo: add manufactures check
       uint32_t meter_id = ((uint32_t)frame[7] << 24) | ((uint32_t)frame[6] << 16) |
                           ((uint32_t)frame[5] << 8)  | ((uint32_t)frame[4]);
