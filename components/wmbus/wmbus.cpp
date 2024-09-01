@@ -68,7 +68,7 @@ namespace wmbus {
       std::vector<unsigned char> frame = mbus_data.frame;
 
       for (unsigned char i: frame)
-        ESP_LOGD(TAG, i);
+        ESP_LOGD(TAG, "%s,", i);
       //unsigned char *buffer = "5344a5119955758176078c0028900f002c2577010000968ef8fBe33061Bf7a6700310710a897ec701e67cf0a62f6c55258c1Be7d3825361a07c4224f96f0B6e22Be48Bae5a5ac859524Ba853de0166275df9c626";
       //frame = std::vector<unsigned char>(buffer, buffer + 168);
       //vec.assign(buffer, buffer + size_of_buffer)
